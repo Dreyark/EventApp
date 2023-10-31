@@ -1,7 +1,23 @@
 ﻿@page "/"
+@inject IEventService eventService
+@using EventApp.Services
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+@foreach(var _event in events)
+{
+    <tr>
+        <td>@_event.Name</td>
+        <td>@_event.Description</td>
+    </tr>
+}
 
-Welcome to your new app.
+@code
+{
+    private List<Entities.Event> events = new();
+    protected override void OnInitialized()
+    {
+        events = eventService.GetEvents();
+        base.OnInitialized();
+    }
+}
