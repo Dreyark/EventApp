@@ -7,8 +7,14 @@ namespace EventApp.Services
     {
         List<Event> GetEvents();
         Event GetEvent(int id);
-        void AddEvent(Event _event);
+        Task AddEvent(Event _event);
         void RemoveEvent(Event _event);
         void UpdateEvent(Event _event);
+
+        List<Status> GetStatus();
+        List<AdminStatus> GetAdminStatus();
+        List<Purpose> GetPurpose();
+        List<EventApp.Entities.Type> GetType();
+
     }
 }

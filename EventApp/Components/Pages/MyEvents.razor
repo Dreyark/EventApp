@@ -1,0 +1,29 @@
+﻿@page "/MyEvents"
+@using EventApp.Services
+@using Microsoft.AspNetCore.Authorization
+@using EventApp.Entities
+@inject IEventService EventService
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@attribute [RenderModeInteractiveServer]
+@attribute [Authorize]
+<PageTitle>Moje Eventy</PageTitle>
+
+@foreach(var _event in events.Where(u=>u.User == id))
+{
+    <tr>
+        <td>@_event.Name</td>
+        <td>@_event.Description</td>
+    </tr>
+}
+
+@code
+{
+    private List<Entities.Event> events = new();
+    private string id;
+    protected override async Task OnInitializedAsync()
+    {
+        events = EventService.GetEvents();
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        id = authstate.User.Identity.Name;
+    }
+}

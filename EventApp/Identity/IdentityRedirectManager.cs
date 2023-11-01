@@ -17,6 +17,7 @@ namespace EventApp.Identity
             MaxAge = TimeSpan.FromSeconds(5),
         };
 
+        //System.NullReferenceException: „Object reference not set to an instance of an object.”
         [DoesNotReturn]
         public void RedirectTo(string uri)
         {

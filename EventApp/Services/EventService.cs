@@ -23,10 +23,11 @@ namespace EventApp.Services
             }
             return _event;
         }
-        public void AddEvent(Event _event)
+        public Task AddEvent(Event _event)
         {
             _context.Event.Add(_event);
             _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
         public void RemoveEvent(Event _event)
@@ -45,6 +46,26 @@ namespace EventApp.Services
                 _context.Event.Update(_event);
                 _context.SaveChangesAsync();
             }
+        }
+
+        public List<Status> GetStatus()
+        {
+            return _context.Status.ToList();
+        }
+
+        public List<AdminStatus> GetAdminStatus()
+        {
+            return _context.AdminStatus.ToList();
+        }
+
+        public List<Purpose> GetPurpose()
+        {
+            return _context.Purpose.ToList();
+        }
+
+        List<Entities.Type> IEventService.GetType()
+        {
+            return _context.Type.ToList();
         }
     }
 }

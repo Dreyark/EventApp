@@ -5,7 +5,7 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
-
+@* https://github.com/dotnet/aspnetcore/issues/51302   @formname="a" *@
 <form @onsubmit="OnSubmitAsync" @formname="logout" method="post" @attributes="AdditionalAttributes">
     <AntiforgeryToken />
     <input type="hidden" name="ReturnUrl" value="@NavigationManager.Uri" />

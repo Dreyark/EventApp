@@ -1,45 +1,113 @@
 ﻿@page "/AddEvent"
+@using EventApp.Services
+@using Microsoft.AspNetCore.Authorization
 @using EventApp.Entities
+@inject IEventService EventService
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
 @attribute [RenderModeInteractiveServer]
+@attribute [Authorize]
+
 
 <PageTitle>Add Event</PageTitle>
 
-<h1>Add Event</h1>
+<Authorized>
 
-@* <div class="row">
-    <div class="col-md-6">
-        <EditForm Model="@Event" OnValidSubmit="Submit">
-            <div>
-                <label for="Name">Event name</label>
-                <InputText id="Name" @bind-Value="Event.Name" class="form-control"></InputText>
-            </div>
-            <div>
-                <label for="Description">Description</label>
-                <InputText id="Description" @bind-Value="Event.Description" class="form-control"></InputText>
-            </div>
-            <div>
-                <label for="Type">Type</label>
-                <InputText id="Type" @bind-Value="Event.Type" class="form-control"></InputText>
-            </div>
-            <div>
-                <label for="StartDate">Start Date</label>
-                <InputText id="StartDate" @bind-Value="Event.StartDate" class="form-control"></InputText>
-            </div>
-            <div>
-                <label for="EndDate">End Date</label>
-                <InputText id="EndDate" @bind-Value="Event.EndDate" class="form-control"></InputText>
-            </div>
-        </EditForm>
+    <h1>Add Event</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <EditForm Model="@_event" OnValidSubmit="Submit">
+                <div>
+                    <label for="Name">Event name</label>
+                    <InputText id="Name" @bind-Value="_event.Name" class="form-control"></InputText>
+                </div>
+                <div>
+                    <label for="Description">Description</label>
+                    <InputTextArea id="Description" @bind-Value="_event.Description" class="form-control"></InputTextArea>
+                </div>
+                <div>
+                    <label for="Type">Type</label>
+                    <InputSelect id="Type" @bind-Value="_event.TypeId" class="form-select">
+                        @foreach (Entities.Type type in _types)
+                        {
+                            <option value="@type.Id">@type.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div>
+                    <label for="Purpose">Purpose</label>
+                    <select class="form-select" multiple @onchange=@((args) => OnMultipleSelectChange(args))>
+                        @foreach (Purpose purpose in _purposes)
+                        {
+                            <option value="@purpose.Id">@purpose.Name</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label for="StartDate">Start Date</label>
+                    <InputDate Type="InputDateType.DateTimeLocal" @bind-Value:format="dd/MM/YYYY hh:mm:ss"
+                               min="@DateTime.Today.ToString("YYYY-MM-dd")" id="StartDate" @bind-Value="_event.StartDate" class="form-control"></InputDate>
+                </div>
+                <div>
+                    <label for="EndDate">End Date</label>
+                    <InputDate Type="InputDateType.DateTimeLocal" @bind-Value:format="dd/MM/YYYY hh:mm:ss"
+                               min="@_event.StartDate" @bind-Value="_event.EndDate" class="form-control"></InputDate>
+                </div>
+                <div>
+                    <label for="Status">Status</label>
+                    <InputSelect id="Status" @bind-Value="_event.StatusId" class="form-select">
+                        @foreach (Status status in _status)
+                        {
+                            <option value="@status.Id">@status.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+                <button type="submit">Submit</button>
+            </EditForm>
+        </div>
     </div>
-</div> *@
 
-
+</Authorized>
 @code {
-    // Event Event = new Event();
+    List<Entities.Type> _types { get; set; }
+    List<Purpose> _purposes { get; set; }
+    List<Status> _status { get; set; }
+    Event _event = new Event();
+    List<Purpose> _selectedPurposes { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        _types = EventService.GetType();
+        _purposes = EventService.GetPurpose();
+        _status = EventService.GetStatus();
+        _event.StartDate = DateTime.Today;
+        _event.EndDate = DateTime.Today;
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var id = authstate.User.Identity.Name;
+        _event.User = id;
 
-    // async Task Submit()
-    // {
+    }
 
-    // }
+    async Task Submit()
+    {
+        _event.Purpose = _selectedPurposes;
+        _event.AdminStatusId = 1;
+        // var status = _context.stat
+        await EventService.AddEvent(_event);
+    }
+
+    private void OnMultipleSelectChange(ChangeEventArgs args)
+    {
+        _selectedPurposes = new List<Purpose>();
+        foreach(var x in (string[])args.Value)
+        {
+            _selectedPurposes.Add(_purposes.Where(i => i.Id == Convert.ToInt16(x)).FirstOrDefault());
+        }
+
+        // }
+        // var z = (Purpose);
+
+        //     _event.Purpose.Add(z);
+        // }
+    }
 }
