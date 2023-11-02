@@ -8,8 +8,8 @@ namespace EventApp.Services
         List<Event> GetEvents();
         Event GetEvent(int id);
         Task AddEvent(Event _event);
-        void RemoveEvent(Event _event);
-        void UpdateEvent(Event _event);
+        Task RemoveEvent(Event _event);
+        Task UpdateEvent(Event _event);
 
         List<Status> GetStatus();
         List<AdminStatus> GetAdminStatus();

@@ -1,19 +1,27 @@
 ﻿@page "/AddEvent"
+@page "/UpdateEvent/{id:int}"
 @using EventApp.Services
 @using Microsoft.AspNetCore.Authorization
 @using EventApp.Entities
 @inject IEventService EventService
+@inject NavigationManager Navigation
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @attribute [RenderModeInteractiveServer]
 @attribute [Authorize]
 
+@if (Id == null)
+{
+    <PageTitle>Dodaj wydarzenie</PageTitle>
+    <h3>Edytuj wydarzenie</h3>
+}
+else
+{
+    <PageTitle>Edytuj wydarzenie</PageTitle>
+    <h3>Edytuj wydarzenie</h3>
+}
 
-<PageTitle>Add Event</PageTitle>
 
 <Authorized>
-
-    <h1>Add Event</h1>
-
     <div class="row">
         <div class="col-md-6">
             <EditForm Model="@_event" OnValidSubmit="Submit">
@@ -39,7 +47,21 @@
                     <select class="form-select" multiple @onchange=@((args) => OnMultipleSelectChange(args))>
                         @foreach (Purpose purpose in _purposes)
                         {
-                            <option value="@purpose.Id">@purpose.Name</option>
+                            if (Id != null && _event.Purpose != null)
+                            {
+                                if(_event.Purpose.Contains(purpose))
+                                   {
+                                    <option value="@purpose.Id" selected="selected">@purpose.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@purpose.Id">@purpose.Name</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="@purpose.Id">@purpose.Name</option>
+                            }
                         }
                     </select>
                 </div>
@@ -62,18 +84,26 @@
                         }
                     </InputSelect>
                 </div>
-                <button type="submit">Submit</button>
+                <button type="submit" class="btn btn-primary">@btnText</button>
+                @if (Id != null)
+                {
+                    <button @onclick="DeleteEvent" class="btn btn-danger">Usuń wydarzenie</button>
+                }
             </EditForm>
         </div>
     </div>
 
 </Authorized>
 @code {
+    [Parameter]
+    public int? Id { get; set; }
     List<Entities.Type> _types { get; set; }
     List<Purpose> _purposes { get; set; }
     List<Status> _status { get; set; }
     Event _event = new Event();
     List<Purpose> _selectedPurposes { get; set; }
+    string btnText = string.Empty;
+    Dictionary<string, object> IsSelected;
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,32 +112,47 @@
         _status = EventService.GetStatus();
         _event.StartDate = DateTime.Today;
         _event.EndDate = DateTime.Today;
-        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        var id = authstate.User.Identity.Name;
-        _event.User = id;
+        btnText = Id == null ? "Dodaj wydarzenie" : "Zaktualizuj wydarzenie";
 
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == null)
+        {
+            var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+            var id = authstate.User.Identity.Name;
+            _event.User = id;
+        }
+        else
+        {
+            _event = EventService.GetEvent((int)Id);
+            IsSelected = new Dictionary<string, object>();
+            IsSelected["selected"] = "selected";
+        }
     }
 
     async Task Submit()
     {
         _event.Purpose = _selectedPurposes;
         _event.AdminStatusId = 1;
-        // var status = _context.stat
-        await EventService.AddEvent(_event);
+        if (Id == null)
+            await EventService.AddEvent(_event);
+        else
+            await EventService.UpdateEvent(_event);
     }
 
     private void OnMultipleSelectChange(ChangeEventArgs args)
     {
         _selectedPurposes = new List<Purpose>();
-        foreach(var x in (string[])args.Value)
+        foreach (var x in (string[])args.Value)
         {
             _selectedPurposes.Add(_purposes.Where(i => i.Id == Convert.ToInt16(x)).FirstOrDefault());
         }
+    }
 
-        // }
-        // var z = (Purpose);
-
-        //     _event.Purpose.Add(z);
-        // }
+    private async void DeleteEvent()
+    {
+        await EventService.RemoveEvent(_event);
+        Navigation.NavigateTo("/");
     }
 }

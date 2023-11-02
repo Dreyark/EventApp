@@ -30,22 +30,24 @@ namespace EventApp.Services
             return Task.CompletedTask;
         }
 
-        public void RemoveEvent(Event _event)
+        public Task RemoveEvent(Event _event)
         {
             if (_event != null)
             {
                 _context.Event.Remove(_event);
                 _context.SaveChangesAsync();
             }
+            return Task.CompletedTask;
         }
 
-        public void UpdateEvent(Event _event)
+        public Task UpdateEvent(Event _event)
         {
             if (_event != null)
             {
                 _context.Event.Update(_event);
                 _context.SaveChangesAsync();
             }
+            return Task.CompletedTask;
         }
 
         public List<Status> GetStatus()
