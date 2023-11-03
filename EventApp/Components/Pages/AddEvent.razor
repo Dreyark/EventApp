@@ -84,11 +84,13 @@ else
                         }
                     </InputSelect>
                 </div>
+                <div>
                 <button type="submit" class="btn btn-primary">@btnText</button>
                 @if (Id != null)
                 {
                     <button @onclick="DeleteEvent" class="btn btn-danger">Usuń wydarzenie</button>
                 }
+                </div>
             </EditForm>
         </div>
     </div>
@@ -101,7 +103,7 @@ else
     List<Purpose> _purposes { get; set; }
     List<Status> _status { get; set; }
     Event _event = new Event();
-    List<Purpose> _selectedPurposes { get; set; }
+    List<Purpose> _selectedPurposes = new List<Purpose>();
     string btnText = string.Empty;
     Dictionary<string, object> IsSelected;
 
@@ -125,6 +127,7 @@ else
         }
         else
         {
+
             _event = EventService.GetEvent((int)Id);
             IsSelected = new Dictionary<string, object>();
             IsSelected["selected"] = "selected";
@@ -143,7 +146,7 @@ else
 
     private void OnMultipleSelectChange(ChangeEventArgs args)
     {
-        _selectedPurposes = new List<Purpose>();
+        _selectedPurposes.Clear();
         foreach (var x in (string[])args.Value)
         {
             _selectedPurposes.Add(_purposes.Where(i => i.Id == Convert.ToInt16(x)).FirstOrDefault());

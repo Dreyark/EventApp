@@ -3,16 +3,19 @@
 @using Microsoft.AspNetCore.Authorization
 @using EventApp.Entities
 @inject IEventService EventService
+@inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @attribute [RenderModeInteractiveServer]
 @attribute [Authorize]
 <PageTitle>Moje Eventy</PageTitle>
 
-@foreach(var _event in events.Where(u=>u.User == id))
+@foreach (var _event in events.Where(u => u.User == id))
 {
     <tr>
         <td>@_event.Name</td>
         <td>@_event.Description</td>
+        <button class="btn btn-primary" @onclick="(() => UpdateEvent(_event.Id))">Edytuj</button>
+        <button @onclick="(() => DeleteEvent(_event))" class="btn btn-danger">Usuń wydarzenie</button>
     </tr>
 }
 
@@ -25,5 +28,15 @@
         events = EventService.GetEvents();
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         id = authstate.User.Identity.Name;
+    }
+
+    void UpdateEvent(int id)
+    {
+        NavigationManager.NavigateTo($"UpdateEvent/{id}");
+    }
+
+    private void DeleteEvent(Event _event)
+    {
+        EventService.RemoveEvent(_event);
     }
 }

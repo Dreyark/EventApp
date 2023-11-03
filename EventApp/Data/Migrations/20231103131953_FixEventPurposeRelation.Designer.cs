@@ -4,6 +4,7 @@ using EventApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231103131953_FixEventPurposeRelation")]
+    partial class FixEventPurposeRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,7 +104,7 @@ namespace EventApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdminStatus", (string)null);
+                    b.ToTable("AdminStatus");
 
                     b.HasData(
                         new
@@ -164,7 +167,7 @@ namespace EventApp.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("Event", (string)null);
+                    b.ToTable("Event");
                 });
 
             modelBuilder.Entity("EventApp.Entities.Purpose", b =>
@@ -181,7 +184,7 @@ namespace EventApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Purpose", (string)null);
+                    b.ToTable("Purpose");
 
                     b.HasData(
                         new
@@ -225,7 +228,7 @@ namespace EventApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Status", (string)null);
+                    b.ToTable("Status");
 
                     b.HasData(
                         new
@@ -264,7 +267,7 @@ namespace EventApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Type", (string)null);
+                    b.ToTable("Type");
 
                     b.HasData(
                         new
@@ -306,7 +309,7 @@ namespace EventApp.Migrations
 
                     b.HasIndex("PurposeId");
 
-                    b.ToTable("EventPurpose", (string)null);
+                    b.ToTable("EventPurpose");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

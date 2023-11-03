@@ -1,5 +1,6 @@
 ﻿using EventApp.Data;
 using EventApp.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventApp.Services
 {
@@ -10,13 +11,18 @@ namespace EventApp.Services
         public EventService(ApplicationDbContext context)
         { _context = context; }
 
+        public void SaveChanges()
+        {
+            _context.SaveChanges();
+        }
+
         public List<Event> GetEvents()
         {
-            return _context.Event.ToList();
+            return _context.Event.Include("Purpose").ToList();
         }
         public Event GetEvent(int id)
         {
-            var _event = _context.Event.FirstOrDefault(e => e.Id == id);
+            var _event = _context.Event.Include("Purpose").FirstOrDefault(e => e.Id == id);
             if (_event == null)
             {
                 throw new ArgumentNullException("id");

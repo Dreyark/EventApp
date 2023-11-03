@@ -15,7 +15,10 @@ namespace EventApp.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<Event>().HasMany(x => x.Purpose).WithMany(y => y.Events).UsingEntity(j => j.ToTable("EventPurpose"));
             base.OnModelCreating(builder);
+
+
             builder.Entity<Status>().HasData(
                 new Status { Id = 1, Name = "Oczekuj¹ce" },
                 new Status { Id = 2, Name = "Zaakceptowane" },
