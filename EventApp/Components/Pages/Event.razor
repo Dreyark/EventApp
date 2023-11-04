@@ -1,0 +1,35 @@
+﻿@page "/Event/{Id:int}"
+@using EventApp.Services
+@using Microsoft.AspNetCore.Authorization
+@using EventApp.Entities
+@inject IEventService EventService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@attribute [RenderModeInteractiveServer]
+<PageTitle>Moje Eventy</PageTitle>
+@_event.Name
+@_event.Description
+@_event.Status.Name
+@_event.Purpose.ToList();
+@_event.Type.Name;
+@code
+{
+    [Parameter]
+    public int? Id { get; set; }
+    Entities.Event _event { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            _event = EventService.GetEvent((int)Id);
+        }
+        catch (Exception e)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+}

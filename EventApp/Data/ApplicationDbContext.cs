@@ -20,10 +20,10 @@ namespace EventApp.Data
 
 
             builder.Entity<Status>().HasData(
-                new Status { Id = 1, Name = "Oczekuj¹ce" },
-                new Status { Id = 2, Name = "Zaakceptowane" },
-                new Status { Id = 3, Name = "Wstrzymane" },
-                new Status { Id = 4, Name = "Odrzucone" }
+                new Status { Id = 1, Name = "Zaplanowany" },
+                new Status { Id = 2, Name = "Wstrzymany" },
+                new Status { Id = 3, Name = "Anulowany" },
+                new Status { Id = 4, Name = "Zakoñczony" }
                 );
             builder.Entity<AdminStatus>().HasData(
                 new AdminStatus { Id = 1, Name = "Oczekuj¹ce" },

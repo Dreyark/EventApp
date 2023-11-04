@@ -4,12 +4,18 @@
 
 <PageTitle>Home</PageTitle>
 
-@foreach(var _event in events)
+@foreach (var _event in events)
 {
-    <tr>
-        <td>@_event.Name</td>
-        <td>@_event.Description</td>
-    </tr>
+    <div class="border rounded-3 p-1 m-2 w-75">
+        <div class="fw-bold">
+            <NavLink class="nav-link text-black" href="@($"Event/{_event.Id}")">
+            @_event.Name
+            </NavLink>
+        </div>
+        <div class="small">
+            @_event.Description
+        </div>
+    </div>
 }
 
 @code

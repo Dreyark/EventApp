@@ -2,7 +2,7 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">EventApp</a>
+        <a class="navbar-brand" href="">Wydarzenia</a>
     </div>
 </div>
 
@@ -12,38 +12,27 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill" aria-hidden="true"></span> Home
+                <span class="bi bi-house-door-fill" aria-hidden="true"></span> Strona Główna
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock" aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div>
         <AuthorizeView>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="MyEvents">
-                    <span class="bi bi-lock" aria-hidden="true"></span> My Events
+            @if (context.User.IsInRole("Admin"))
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="AdminPanel">
+                    <span class="bi bi-lock" aria-hidden="true"></span> Panel Administratora
                 </NavLink>
             </div>
-        </AuthorizeView>
-        <AuthorizeView>
+            }
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="MyEvents">
+                    <span class="bi bi-lock" aria-hidden="true"></span> Moje Wydarzenia
+                </NavLink>
+            </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="AddEvent">
-                    <span class="bi bi-lock" aria-hidden="true"></span> Add Event
+                    <span class="bi bi-lock" aria-hidden="true"></span> Dodaj Wydarzenie
                 </NavLink>
             </div>
         </AuthorizeView>
@@ -58,19 +47,19 @@
                 <div class="nav-item px-3">
                     <LogoutForm id="logout-form" />
                     <NavLink class="nav-link" href="#" onclick="document.getElementById('logout-form').submit(); return false;">
-                        <span class="bi bi-arrow-bar-left" aria-hidden="true"></span> Logout
+                        <span class="bi bi-arrow-bar-left" aria-hidden="true"></span> Wyloguj
                     </NavLink>
                 </div>
             </Authorized>
             <NotAuthorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/Account/Register">
-                        <span class="bi bi-person" aria-hidden="true"></span> Register
+                        <span class="bi bi-person" aria-hidden="true"></span> Zarejestruj się
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/Account/Login">
-                        <span class="bi bi-person-badge" aria-hidden="true"></span> Login
+                        <span class="bi bi-person-badge" aria-hidden="true"></span> Zaloguj
                     </NavLink>
                 </div>
             </NotAuthorized>

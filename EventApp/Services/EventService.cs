@@ -18,11 +18,11 @@ namespace EventApp.Services
 
         public List<Event> GetEvents()
         {
-            return _context.Event.Include("Purpose").ToList();
+            return _context.Event.Include("AdminStatus").Include("Purpose").Include("Status").Include("Type").ToList();
         }
         public Event GetEvent(int id)
         {
-            var _event = _context.Event.Include("Purpose").FirstOrDefault(e => e.Id == id);
+            var _event = _context.Event.Include("AdminStatus").Include("Purpose").Include("Status").Include("Type").FirstOrDefault(e => e.Id == id);
             if (_event == null)
             {
                 throw new ArgumentNullException("id");

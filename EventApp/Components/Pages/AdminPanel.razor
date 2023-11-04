@@ -1,4 +1,4 @@
-﻿@page "/MyEvents"
+﻿@page "/AdminPanel"
 @using EventApp.Services
 @using Microsoft.AspNetCore.Authorization
 @using EventApp.Entities
@@ -7,27 +7,21 @@
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @attribute [RenderModeInteractiveServer]
 @attribute [Authorize]
-<PageTitle>Moje Eventy</PageTitle>
-
+<PageTitle>Panel Administratora</PageTitle>
 <AuthorizeView>
-    @if (context.User.IsInRole("Member") || context.User.IsInRole("Admin"))
-        @foreach (var _event in events.Where(u => u.User == id))
+    @if (context.User.IsInRole("Admin"))
+    {
+        @foreach (var _event in events)
         {
-            <div class="container-fluid" style="min-height:150px ;max-height:200px">
-                <div class="row">
-                    <div class="row-cols-8 fw-bold">
-                        @_event.Name
-                    </div>
-                    <div class="col-5" style="white-space:pre">
-                        @_event.Type.Name
-                    </div>
-                    <div class="col-2">
-                        <button class="btn btn-primary" @onclick="(() => UpdateEvent(_event.Id))">Edytuj</button>
-                        <button @onclick="(() => DeleteEvent(_event))" class="btn btn-danger">Usuń wydarzenie</button>
-                    </div>
-                </div>
-            </div>
+            <tr>
+                <td>@_event.Name</td>
+                <td>@_event.Description</td>
+                <button class="btn btn-primary" @onclick="(() => UpdateEvent(_event.Id))">Edytuj</button>
+                <button @onclick="(() => DeleteEvent(_event))" class="btn btn-danger">Usuń wydarzenie</button>
+                
+            </tr>
         }
+    }
 </AuthorizeView>
 @code
 {
