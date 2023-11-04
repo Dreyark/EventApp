@@ -2,46 +2,66 @@
 @using EventApp.Services
 @using Microsoft.AspNetCore.Authorization
 @using EventApp.Entities
+@using Microsoft.AspNetCore.Components.QuickGrid
 @inject IEventService EventService
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @attribute [RenderModeInteractiveServer]
 @attribute [Authorize]
 <PageTitle>Panel Administratora</PageTitle>
-<AuthorizeView>
-    @if (context.User.IsInRole("Admin"))
+<AuthorizeView Context="auth">
+    @if (auth.User.IsInRole("Admin"))
     {
-        @foreach (var _event in events)
-        {
-            <tr>
-                <td>@_event.Name</td>
-                <td>@_event.Description</td>
-                <button class="btn btn-primary" @onclick="(() => UpdateEvent(_event.Id))">Edytuj</button>
-                <button @onclick="(() => DeleteEvent(_event))" class="btn btn-danger">Usuń wydarzenie</button>
-                
-            </tr>
-        }
+        <QuickGrid Items="@events.AsQueryable()">
+            <PropertyColumn Property="@(e => e.Name)" Sortable="true" Title="Nazwa wydarzenia" />
+            <PropertyColumn Property="@(e => e.Type.Name)" Sortable="true" Title="Typ" />
+            <PropertyColumn Property="@(e => e.Status.Name)" Sortable="true" Title="Status" />
+            <PropertyColumn Property="@(e => e.StartDate)" Sortable="true" Title="Data rozpoczęcia" Format="hh:mm dd MMMM yyyy" />
+            <PropertyColumn Property="@(e => e.EndDate)" Sortable="true" Title="Data zakończenia" Format="hh:mm dd MMMM yyyy" />
+            <PropertyColumn Property="@(e => e.User)" Sortable="true" Title="Użytkownik" />
+            <TemplateColumn Title="Status Administracji">
+                <Select value="@context.AdminStatusId" @onchange="((arg) => UpdateAdminStatus(arg, context))">
+                    @foreach (AdminStatus adminStatus in _AdminStatus)
+                    {
+                        <option value="@adminStatus.Id">@adminStatus.Name</option>
+                    }
+                </Select>
+            </TemplateColumn>
+            <TemplateColumn>
+                <button class="btn btn-primary" @onclick="(() =>UpdateEvent(context.Id))">Edytuj</button>
+            </TemplateColumn>
+            <TemplateColumn>
+                <button @onclick="(() => DeleteEvent(context))" class="btn btn-danger">Usuń wydarzenie</button>
+            </TemplateColumn>
+        </QuickGrid>
     }
 </AuthorizeView>
 @code
 {
-    private List<Entities.Event> events = new();
-    private string id;
+    private ICollection<Entities.Event> events;
+
+    List<AdminStatus> _AdminStatus;
+    private string? id;
     protected override async Task OnInitializedAsync()
     {
+        _AdminStatus = EventService.GetAdminStatus();
         events = EventService.GetEvents();
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        id = authstate.User.Identity.Name;
+        id = authstate.User.Identity?.Name!;
     }
 
     void UpdateEvent(int id)
     {
         NavigationManager.NavigateTo($"UpdateEvent/{id}");
     }
-
-    private void DeleteEvent(Entities.Event _event)
+    private async Task DeleteEvent(Entities.Event _event)
     {
-        EventService.RemoveEvent(_event);
-        NavigationManager.Refresh();
+        await EventService.RemoveEvent(_event);
+        events.Remove(_event);
+    }
+    private async Task UpdateAdminStatus(ChangeEventArgs arg, Entities.Event _event)
+    {
+        _event.AdminStatusId = Convert.ToInt16(arg.Value);
+        await EventService.UpdateEvent(_event);
     }
 }

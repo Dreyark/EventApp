@@ -24,18 +24,20 @@ else
     {
         <div class="row">
             <div class="col-md-6">
-                <EditForm Model="@_event" OnValidSubmit="Submit">
+                <EditForm EditContext="editContext" OnValidSubmit="Submit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
                     <div>
-                        <label for="Name">Event name</label>
-                        <InputText id="Name" @bind-Value="_event.Name" class="form-control"></InputText>
+                        <label for="Name">Nazwa wydarzenia</label>
+                        <InputText id="Name" @bind-Value="_event.Name" class="form-control m-1"></InputText>
                     </div>
                     <div>
-                        <label for="Description">Description</label>
-                        <InputTextArea id="Description" @bind-Value="_event.Description" class="form-control"></InputTextArea>
+                        <label for="Description">Opis wydarzenia</label>
+                        <InputTextArea id="Description" @bind-Value="_event.Description" class="form-control m-1"></InputTextArea>
                     </div>
                     <div>
-                        <label for="Type">Type</label>
-                        <InputSelect id="Type" @bind-Value="_event.TypeId" class="form-select">
+                        <label for="Type">Typ wydarzenia</label>
+                        <InputSelect id="Type" @bind-Value="_event.TypeId" class="form-select m-1">
                             @foreach (Entities.Type type in _types)
                             {
                                 <option value="@type.Id">@type.Name</option>
@@ -43,8 +45,8 @@ else
                         </InputSelect>
                     </div>
                     <div>
-                        <label for="Purpose">Purpose</label>
-                        <select class="form-select" multiple @onchange=@((args) => OnMultipleSelectChange(args))>
+                        <label for="Purpose">Cel wydarzenia</label>
+                        <select class="form-select m-1" multiple @onchange=@((args) => OnMultipleSelectChange(args))>
                             @foreach (Purpose purpose in _purposes)
                             {
                                 if (Id != null && _event.Purpose != null)
@@ -66,18 +68,18 @@ else
                         </select>
                     </div>
                     <div>
-                        <label for="StartDate">Start Date</label>
+                        <label for="StartDate">Data rozpoczęcia</label>
                         <InputDate Type="InputDateType.DateTimeLocal" @bind-Value:format="dd/MM/YYYY hh:mm:ss"
-                                   min="@DateTime.Today.ToString("YYYY-MM-dd")" id="StartDate" @bind-Value="_event.StartDate" class="form-control"></InputDate>
+                                   @bind-Value="_event.StartDate" class="form-control m-1"></InputDate>
                     </div>
                     <div>
-                        <label for="EndDate">End Date</label>
+                        <label for="EndDate">Data zakończenia</label>
                         <InputDate Type="InputDateType.DateTimeLocal" @bind-Value:format="dd/MM/YYYY hh:mm:ss"
-                                   min="@_event.StartDate" @bind-Value="_event.EndDate" class="form-control"></InputDate>
+                                   @bind-Value="_event.EndDate" class="form-control m-1"></InputDate>
                     </div>
                     <div>
                         <label for="Status">Status</label>
-                        <InputSelect id="Status" @bind-Value="_event.StatusId" class="form-select">
+                        <InputSelect id="Status" @bind-Value="_event.StatusId" class="form-select m-1">
                             @foreach (Status status in _status)
                             {
                                 <option value="@status.Id">@status.Name</option>
@@ -88,7 +90,7 @@ else
                     {
                         <div>
                             <label for="AdminStatus">Admin Status</label>
-                            <InputSelect id="AdminStatus" @bind-Value="_event.AdminStatusId" class="form-select">
+                            <InputSelect id="AdminStatus" @bind-Value="_event.AdminStatusId" class="form-select m-1">
                                 @foreach (AdminStatus adminStatus in _AdminStatus)
                                 {
                                     <option value="@adminStatus.Id">@adminStatus.Name</option>
@@ -97,7 +99,7 @@ else
                         </div>
                     }
                     <div>
-                        <button type="submit" class="btn btn-primary">@btnText</button>
+                        <button type="submit" class="btn btn-primary m-1">@btnText</button>
                         @if (Id != null)
                         {
                             <button @onclick="DeleteEvent" class="btn btn-danger">Usuń wydarzenie</button>
@@ -123,7 +125,8 @@ else
     List<Purpose> _selectedPurposes = new List<Purpose>();
     string btnText = string.Empty;
     Dictionary<string, object> IsSelected;
-
+    EditContext editContext;
+    private ValidationMessageStore? messageStore;
     protected override async Task OnInitializedAsync()
     {
         _types = EventService.GetType();
@@ -131,7 +134,6 @@ else
         _status = EventService.GetStatus();
         _AdminStatus = EventService.GetAdminStatus();
         btnText = Id == null ? "Dodaj wydarzenie" : "Zaktualizuj wydarzenie";
-
     }
     protected override async Task OnParametersSetAsync()
     {
@@ -150,13 +152,16 @@ else
             {
                 _event = EventService.GetEvent((int)Id);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Navigation.NavigateTo("/");
             }
             IsSelected = new Dictionary<string, object>();
             IsSelected["selected"] = "selected";
         }
+        editContext = new EditContext(_event);
+        editContext.OnValidationRequested += EndDateValidation;
+        messageStore = new(editContext);
     }
 
     async Task Submit()
@@ -184,5 +189,15 @@ else
     {
         await EventService.RemoveEvent(_event);
         Navigation.NavigateTo("/");
+    }
+
+    private void EndDateValidation(object? sender,
+    ValidationRequestedEventArgs args)
+    {
+        messageStore?.Clear();
+        if (_event.StartDate > _event.EndDate)
+        {
+            messageStore?.Add(() => _event.EndDate, "Data zakończenia musi występować po dacie rozpoczęcia");
+        }
     }
 }
