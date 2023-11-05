@@ -69,12 +69,12 @@ else
                     </div>
                     <div>
                         <label for="StartDate">Data rozpoczęcia</label>
-                        <InputDate Type="InputDateType.DateTimeLocal" @bind-Value:format="dd/MM/YYYY hh:mm:ss"
+                        <InputDate Type="InputDateType.DateTimeLocal" @bind-Value:format="dd/MM/YYYY hh:mm"
                                    @bind-Value="_event.StartDate" class="form-control m-1"></InputDate>
                     </div>
                     <div>
                         <label for="EndDate">Data zakończenia</label>
-                        <InputDate Type="InputDateType.DateTimeLocal" @bind-Value:format="dd/MM/YYYY hh:mm:ss"
+                        <InputDate Type="InputDateType.DateTimeLocal" @bind-Value:format="dd/MM/YYYY hh:mm" @onkeyup="((e) => EndDateValidation(e))"
                                    @bind-Value="_event.EndDate" class="form-control m-1"></InputDate>
                     </div>
                     <div>
@@ -160,7 +160,7 @@ else
             IsSelected["selected"] = "selected";
         }
         editContext = new EditContext(_event);
-        editContext.OnValidationRequested += EndDateValidation;
+        // editContext.OnValidationRequested += EndDateValidation;
         messageStore = new(editContext);
     }
 
@@ -191,13 +191,22 @@ else
         Navigation.NavigateTo("/");
     }
 
-    private void EndDateValidation(object? sender,
-    ValidationRequestedEventArgs args)
+    // private void EndDateValidation(object? sender,
+    // ValidationRequestedEventArgs args)
+    // {
+    //     messageStore?.Clear();
+    //     if (_event.StartDate > _event.EndDate)
+    //     {
+    //         messageStore?.Add(() => _event.EndDate, "Data zakończenia musi występować po dacie rozpoczęcia");
+    //     }
+    // }
+    private void EndDateValidation(EventArgs e)
     {
         messageStore?.Clear();
         if (_event.StartDate > _event.EndDate)
         {
             messageStore?.Add(() => _event.EndDate, "Data zakończenia musi występować po dacie rozpoczęcia");
         }
+        editContext.NotifyValidationStateChanged();
     }
 }
