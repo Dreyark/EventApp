@@ -9,10 +9,7 @@ namespace EventApp.Services
         Event GetEvent(int id);
         Task AddEvent(Event _event);
         Task RemoveEvent(Event _event);
-        void SaveChanges();
         Task UpdateEvent(Event _event);
-
-
         List<Status> GetStatus();
         List<AdminStatus> GetAdminStatus();
         List<Purpose> GetPurpose();

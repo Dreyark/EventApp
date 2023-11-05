@@ -11,11 +11,6 @@ namespace EventApp.Services
         public EventService(ApplicationDbContext context)
         { _context = context; }
 
-        public void SaveChanges()
-        {
-            _context.SaveChanges();
-        }
-
         public List<Event> GetEvents()
         {
             return _context.Event.Include("AdminStatus").Include("Purpose").Include("Status").Include("Type").ToList();
