@@ -79,7 +79,7 @@ using (var scope = app.Services.CreateScope())
         user.UserName = email;
         user.Email = email;
         await userManager.CreateAsync(user, password);
-
+        await userManager.AddToRoleAsync(user, "Member");
         await userManager.AddToRoleAsync(user, "Admin");
 
     }
