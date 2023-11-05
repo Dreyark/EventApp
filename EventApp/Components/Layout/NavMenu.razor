@@ -21,20 +21,23 @@
             {
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="AdminPanel">
-                    <span class="bi bi-lock" aria-hidden="true"></span> Panel Administratora
-                </NavLink>
-            </div>
+                        <span class="bi bi-lock" aria-hidden="true"></span> Panel Administratora
+                    </NavLink>
+                </div>
             }
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="MyEvents">
-                    <span class="bi bi-lock" aria-hidden="true"></span> Moje Wydarzenia
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="AddEvent">
-                    <span class="bi bi-lock" aria-hidden="true"></span> Dodaj Wydarzenie
-                </NavLink>
-            </div>
+            @if (context.User.IsInRole("Member"))
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="MyEvents">
+                        <span class="bi bi-lock" aria-hidden="true"></span> Moje Wydarzenia
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="AddEvent">
+                        <span class="bi bi-lock" aria-hidden="true"></span> Dodaj Wydarzenie
+                    </NavLink>
+                </div>
+            }
         </AuthorizeView>
 
         <AuthorizeView>

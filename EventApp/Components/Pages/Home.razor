@@ -1,26 +1,48 @@
 ﻿@page "/"
 @inject IEventService eventService
+@using EventApp.Entities
 @using EventApp.Services
 
 <PageTitle>Home</PageTitle>
 
-@foreach (var _event in events)
+@foreach (var _event in events.OrderByDescending(e=>e.Id))
 {
-    <div class="border rounded-3 p-1 m-2 w-75">
+    <div class="border rounded-3 p-1 m-2 w-50">
         <div class="fw-bold">
             <NavLink class="nav-link text-black" href="@($"Event/{_event.Id}")">
-            @_event.Name
+                @_event.Name
             </NavLink>
         </div>
-        <div class="small">
-            @_event.Description
+        <div class="ms-lg-3">
+            @if (_event.Purpose.Count != 0)
+            {
+                <label class="fw-bold">Cel :&nbsp;</label>
+                @foreach (Purpose purpose in _event.Purpose)
+                {
+                    @purpose.Name
+                    @:&nbsp;
+                }
+            }
+        </div>
+        <div class="small m-3" style="width:96%; word-wrap: break-word;">
+            @if (_event.Description.Length > 300)
+            {
+                @_event.Description.Substring(0, 300)
+                ;
+                @:...
+            }
+            else
+            {
+                @_event.Description
+                ;
+            }
         </div>
     </div>
 }
 
 @code
 {
-    private List<Entities.Event> events = new();
+    private IEnumerable<Entities.Event> events;
     protected override void OnInitialized()
     {
         events = eventService.GetEvents();

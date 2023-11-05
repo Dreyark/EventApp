@@ -12,7 +12,7 @@
 <AuthorizeView Context="auth">
     @if (auth.User.IsInRole("Admin"))
     {
-        <QuickGrid Items="@events.AsQueryable()">
+        <QuickGrid Items="@events.OrderByDescending(e=>e.Id).AsQueryable()">
             <PropertyColumn Property="@(e => e.Name)" Sortable="true" Title="Nazwa wydarzenia" />
             <PropertyColumn Property="@(e => e.Type.Name)" Sortable="true" Title="Typ" />
             <PropertyColumn Property="@(e => e.Status.Name)" Sortable="true" Title="Status" />
@@ -26,6 +26,9 @@
                         <option value="@adminStatus.Id">@adminStatus.Name</option>
                     }
                 </Select>
+            </TemplateColumn>
+            <TemplateColumn>
+                <button class="btn btn-primary" @onclick="(() =>GoToEvent(context.Id))">Wyświetl</button>
             </TemplateColumn>
             <TemplateColumn>
                 <button class="btn btn-primary" @onclick="(() =>UpdateEvent(context.Id))">Edytuj</button>
@@ -48,6 +51,11 @@
         events = EventService.GetEvents();
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         id = authstate.User.Identity?.Name!;
+    }
+
+    void GoToEvent(int id)
+    {
+        NavigationManager.NavigateTo($"Event/{id}");
     }
 
     void UpdateEvent(int id)

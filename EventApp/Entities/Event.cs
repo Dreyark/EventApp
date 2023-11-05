@@ -11,8 +11,8 @@ namespace EventApp.Entities
         [Key]
         public int Id { get; set; }
         [Required(ErrorMessage = "Nazwa wydarzenia jest obowiązkowa")]
-        [MaxLength(200)]
-        [Column(TypeName = "nvarchar(200)")]
+        [MaxLength(100)]
+        [Column(TypeName = "nvarchar(100)")]
         public string Name { get; set; } = string.Empty;
         [MaxLength(2000)]
         [Column(TypeName = "nvarchar(2000)")]

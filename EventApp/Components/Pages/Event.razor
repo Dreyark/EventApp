@@ -7,25 +7,54 @@
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @attribute [RenderModeInteractiveServer]
 <PageTitle>Moje Eventy</PageTitle>
-@_event.Name
-@_event.Description
-@_event.Status.Name
-@_event.Purpose.ToList();
-@_event.Type.Name;
+<div>
+    <div class="row w-75">
+        <div class="col-8 col-md-8 fw-bold"><h4 style="overflow-wrap: break-word;">@_event.Name</h4></div>
+        <div class="col-2 col-md-2">
+            <label class="fw-bold">Status:&nbsp;</label>@_event.Status.Name
+        </div>
+    </div>
+    <div class="row w-75">
+        <div class="col-2">
+            <label class="fw-bold">Typ :&nbsp;</label>@_event.Type.Name
+        </div>
+        <div class="col-6">
+            @if (_event.Purpose.Count != 0)
+            {
+                <label class="fw-bold">Cel :&nbsp;</label>
+                @foreach (Purpose purpose in _event.Purpose)
+                {
+                    @purpose.Name
+                    @:&nbsp;
+                }
+            }
+        </div>
+    </div>
+    <div class="row w-75 mt-4">
+        <div clas="m-5" style="white-space: pre-line; overflow-wrap: break-word;">
+            @_event.Description
+        </div>
+    </div>
+</div>
 @code
 {
     [Parameter]
     public int? Id { get; set; }
     Entities.Event _event { get; set; }
+    string Description;
     protected override async Task OnInitializedAsync()
     {
-
+    }
+    public string ShowLineBreaks(object text)
+    {
+        return (text.ToString().Replace("\n", " <br /> "));
     }
     protected override async Task OnParametersSetAsync()
     {
         try
         {
             _event = EventService.GetEvent((int)Id);
+            Description = ShowLineBreaks(_event.Description);
         }
         catch (Exception e)
         {

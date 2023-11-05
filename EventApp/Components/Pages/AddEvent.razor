@@ -160,7 +160,7 @@ else
             IsSelected["selected"] = "selected";
         }
         editContext = new EditContext(_event);
-        // editContext.OnValidationRequested += EndDateValidation;
+        editContext.OnValidationRequested += EndDateValidation;
         messageStore = new(editContext);
     }
 
@@ -191,15 +191,15 @@ else
         Navigation.NavigateTo("/");
     }
 
-    // private void EndDateValidation(object? sender,
-    // ValidationRequestedEventArgs args)
-    // {
-    //     messageStore?.Clear();
-    //     if (_event.StartDate > _event.EndDate)
-    //     {
-    //         messageStore?.Add(() => _event.EndDate, "Data zakończenia musi występować po dacie rozpoczęcia");
-    //     }
-    // }
+    private void EndDateValidation(object? sender,
+    ValidationRequestedEventArgs args)
+    {
+        messageStore?.Clear();
+        if (_event.StartDate > _event.EndDate)
+        {
+            messageStore?.Add(() => _event.EndDate, "Data zakończenia musi występować po dacie rozpoczęcia");
+        }
+    }
     private void EndDateValidation(EventArgs e)
     {
         messageStore?.Clear();
